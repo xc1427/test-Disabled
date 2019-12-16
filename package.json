@@ -1,4 +1,5 @@
 {
+  "name": "test-Disabled",
   "private": true,
   "scripts": {
     "start": "umi dev",
@@ -9,14 +10,17 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@types/classnames": "^2.2.9",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
+    "@umijs/fabric": "^1.2.4",
     "antd": "^3.19.5",
     "classnames": "^2.2.6",
-    "dva": "^2.6.0-beta.6",
+    "debug": "^4.1.1",
+    "dva": "^2.6.0-beta.19",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.9",
     "@types/jest": "^23.3.12",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",

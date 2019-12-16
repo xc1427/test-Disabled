@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+
 // import history from '@alipay/bigfish/sdk/history';
 // import { Link } from '@alipay/bigfish/sdk/router';
 // import { connect } from '@alipay/bigfish/sdk';
@@ -15,88 +16,84 @@ type Props = {
  */
 export const Disabled: React.FC<Props> = props => {
   const { disabled = true, children, title = '不允许操作', ...restProps } = props;
-  const wrapperSpanRef = useRef<HTMLSpanElement>(null);
-  const stubRef = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    let btn: HTMLButtonElement | null = null;
+  const stubRef = useRef<HTMLSpanElement | null>(null);
+  const foundBtnRef = useRef<HTMLButtonElement | null>(null);
+  const copiedDisabledBtnRef = useRef<HTMLButtonElement | null>(null);
 
-    if (disabled && wrapperSpanRef.current) {
-      btn = copyInnerButtonElement(wrapperSpanRef.current, title);
-      wrapperSpanRef.current.appendChild(btn);
+  useEffect(() => {
+    if (disabled && stubRef.current) {
+      const [foundBtn, copiedDisabledBtn] = copyInnerButtonElement(
+        stubRef.current.previousElementSibling as HTMLElement | null,
+      );
+      if (foundBtn && copiedDisabledBtn) {
+        // eslint-disable-next-line no-unused-expressions
+        foundBtn.parentNode?.replaceChild(copiedDisabledBtn, foundBtn);
+        foundBtnRef.current = foundBtn;
+        copiedDisabledBtnRef.current = copiedDisabledBtn;
+      }
     }
 
     return () => {
-      if (btn) {
-        btn.remove();
+      if (foundBtnRef.current && copiedDisabledBtnRef.current) {
+        // eslint-disable-next-line no-unused-expressions
+        copiedDisabledBtnRef.current.parentNode?.replaceChild(
+          foundBtnRef.current,
+          copiedDisabledBtnRef.current,
+        );
+        copiedDisabledBtnRef.current.remove();
       }
     };
-  }, [disabled, title]);
-  useEffect(() => {
-    if (stubRef.current) {
-      console.log(stubRef.current.previousSibling);
-    }
-  }, []);
+  });
+
   if (!disabled && React.isValidElement(children)) {
     return React.cloneElement(children, { ...restProps });
   }
   return (
     <>
-    {children}
-    <span id={'disabled_stub'} style={{ position: 'fixed', top: 0 }} ref={stubRef} />
+      {children}
+      <span className="_disabled_stub" style={{ position: 'fixed', top: 0 }} ref={stubRef} />
     </>
   );
 };
 
-function copyInnerButtonElement(element: HTMLElement, title: string) {
-  const traverseChildren = (
-    traversedEle: HTMLElement,
-    tagName: keyof HTMLElementTagNameMap,
-  ): HTMLElement | null => {
-    for (let i = 0, n = traversedEle.childNodes.length; i < n; i += 1) {
-      const child: HTMLElement = traversedEle.childNodes[i] as any;
-      if (child.nodeType === 1 && child.tagName.toLowerCase() === tagName) {
-        return child;
-      }
-      const foundElem = traverseChildren(child, tagName);
-      if (!foundElem) {
-        continue;
-      }
-      return foundElem;
-    }
+const __traverse = (
+  traversedEle: HTMLElement,
+  tagName: keyof HTMLElementTagNameMap,
+): HTMLElement | null => {
+  if (!traversedEle) {
     return null;
-  };
+  }
+  if (traversedEle.nodeType === 1 && traversedEle.tagName.toLowerCase() === tagName) {
+    return traversedEle;
+  }
 
-  /*const traverse = (traversedEle: HTMLElement, tagName: keyof HTMLElementTagNameMap):HTMLElement | null => {
-    if (traversedEle.nodeType === 1 && traversedEle.tagName.toLowerCase() === tagName) {
-      return traversedEle;
+  for (let i = 0, n = traversedEle.childNodes.length; i < n; i += 1) {
+    const child: HTMLElement = traversedEle.childNodes[i] as any;
+    const foundElem = __traverse(child, tagName);
+    if (!foundElem) {
+      continue;
     }
+    return foundElem;
+  }
+  return null;
+};
 
-    for (let i = 0, n = traversedEle.childNodes.length; i < n; i += 1) {
-      const child: HTMLElement = traversedEle.childNodes[i] as any;
-      const foundElem = traverse(child, tagName);
-      if (!foundElem) {
-        continue;
-      }
-      return foundElem;
-    }
-    return null;
-  };
-*/
-
-  const foundButton: HTMLButtonElement | null = traverseChildren(
+function copyInnerButtonElement(
+  element: HTMLElement | null,
+): [HTMLButtonElement, HTMLButtonElement] | [null, null] {
+  if (!element) {
+    return [null, null];
+  }
+  const foundButton: HTMLButtonElement | null = __traverse(
     element,
     'button',
   ) as HTMLButtonElement | null;
 
   if (foundButton) {
     const dupBtn: HTMLButtonElement = (foundButton as any).cloneNode(true);
-    dupBtn.setAttribute('title', title);
     dupBtn.disabled = true;
-    dupBtn.style.position = 'absolute';
-    dupBtn.style.left = '0';
-    dupBtn.style.top = '0';
     // 如果子节点中还有 anchor, 则需要再把 anchor 上添加禁用效果
-    const foundAnchor: HTMLAnchorElement | null = traverseChildren(
+    const foundAnchor: HTMLAnchorElement | null = __traverse(
       dupBtn,
       'a',
     ) as HTMLAnchorElement | null;
@@ -105,17 +102,7 @@ function copyInnerButtonElement(element: HTMLElement, title: string) {
       foundAnchor.style.cursor = 'not-allowed';
       foundAnchor.removeAttribute('href');
     }
-    return dupBtn;
+    return [foundButton, dupBtn];
   }
-  console.warn('未找到 button 实例，创建新的实例');
-  const newBtn: HTMLButtonElement = document.createElement<'button'>('button');
-  newBtn.setAttribute('title', title);
-  newBtn.innerText = '未找到 button 实例';
-  newBtn.style.position = 'absolute';
-  newBtn.style.left = '0';
-  newBtn.style.top = '0';
-  newBtn.style.color = 'white';
-  newBtn.style.background = 'red';
-  newBtn.style.borderRadius = '4';
-  return newBtn;
+  return [null, null];
 }

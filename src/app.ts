@@ -1,8 +1,10 @@
+import './global.yunyou';
+
 export const dva = {
   config: {
     onError(err: ErrorEvent) {
       err.preventDefault();
-      console.error(err.message);
+      yunyou.error(err.message);
     },
   },
 };
