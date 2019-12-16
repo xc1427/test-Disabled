@@ -33,6 +33,7 @@ export default function() {
         </Disabled>
         <MyButton type={'primary'}>confirm</MyButton>
       </div>
+      <br />
       <div>
         <TextBtn>text btn</TextBtn>
       </div>

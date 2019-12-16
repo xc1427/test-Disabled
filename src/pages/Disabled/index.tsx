@@ -16,6 +16,7 @@ type Props = {
 export const Disabled: React.FC<Props> = props => {
   const { disabled = true, children, title = '不允许操作', ...restProps } = props;
   const wrapperSpanRef = useRef<HTMLSpanElement>(null);
+  const stubRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     let btn: HTMLButtonElement | null = null;
 
@@ -30,14 +31,18 @@ export const Disabled: React.FC<Props> = props => {
       }
     };
   }, [disabled, title]);
-
+  useEffect(() => {
+    if (stubRef.current) {
+      console.log(stubRef.current.previousSibling);
+    }
+  }, []);
   if (!disabled && React.isValidElement(children)) {
     return React.cloneElement(children, { ...restProps });
   }
   return (
     <>
     {children}
-    <span id={'disabled_stub'} style={{ position: 'fixed', top: 0 }} />
+    <span id={'disabled_stub'} style={{ position: 'fixed', top: 0 }} ref={stubRef} />
     </>
   );
 };
@@ -102,7 +107,7 @@ function copyInnerButtonElement(element: HTMLElement, title: string) {
     }
     return dupBtn;
   }
-  yunyou.warn('未找到 button 实例，创建新的实例');
+  console.warn('未找到 button 实例，创建新的实例');
   const newBtn: HTMLButtonElement = document.createElement<'button'>('button');
   newBtn.setAttribute('title', title);
   newBtn.innerText = '未找到 button 实例';
