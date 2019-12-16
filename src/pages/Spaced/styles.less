@@ -1,0 +1,78 @@
+.spacedBox {
+  &.left-4 {
+    & > * {
+      margin-left: 4px;
+    }
+  }
+  &.left-8 {
+    & > * {
+      margin-left: 8px;
+    }
+  }
+  &.left-16 {
+    & > * {
+      margin-left: 16px;
+    }
+  }
+  &.right-4 {
+    & > * {
+      margin-right: 4px;
+    }
+  }
+  &.right-8 {
+    & > * {
+      margin-right: 8px;
+    }
+  }
+  &.right-16 {
+    & > * {
+      margin-right: 16px;
+    }
+  }
+  &.both-4 {
+    & > * {
+      margin-left: 4px;
+    }
+    & > *:last-child {
+      margin-right: 4px;
+    }
+  }
+  &.both-8 {
+    & > * {
+      margin-left: 8px;
+    }
+    & > *:last-child {
+      margin-right: 8px;
+    }
+  }
+  &.both-16 {
+    & > * {
+      margin-left: 16px;
+    }
+    & > *:last-child {
+      margin-right: 16px;
+    }
+  }
+
+  &.none-4 {
+    & > *:not(:first-child) {
+      margin-left: 4px;
+    }
+  }
+  &.none-8 {
+    & > *:not(:first-child) {
+      margin-left: 8px;
+    }
+  }
+  &.none-16 {
+    & > *:not(:first-child) {
+      margin-left: 16px;
+    }
+  }
+}
+
+.spacedBox.hasComma {
+  & > *:not(:last-child)::after {
+    content: ',';
+  }
+}

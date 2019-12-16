@@ -1,0 +1,36 @@
+@import '~@/styles/variables.less';
+
+.textAlikeBtn {
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color .3s ease;
+  &:hover:not([disabled]) {
+    opacity: 0.75;
+  }
+  // 以下这些 className 和组件 props.color 一一对应的
+  &.blue:not([disabled]) {
+    color: @blue-color;
+  }
+  &.green:not([disabled]) {
+    color: @green-color;
+  }
+  &.yellow:not([disabled]) {
+    color: @yellow-color;
+  }
+  &.red:not([disabled]) {
+    color: @red-color;
+  }
+  &.white:not([disabled]) {
+    color: white;
+  }
+  &.text-color:not([disabled]) {
+    color: @dark-gray-color;
+  }
+  &[disabled] {
+    cursor: not-allowed;
+    color: #ccc;
+  }
+}
+
